@@ -11,3 +11,11 @@ sast:
   stage: test
 include:
 - template: Security/SAST.gitlab-ci.yml
+
+validate-skill:
+  stage: test
+  image: python:3.12-bookworm
+  before_script:
+    - python -m pip install -r requirements-ci.txt
+  script:
+    - skills-ref validate skills/is-local-first
