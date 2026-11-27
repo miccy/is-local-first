@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Kuku",
+    "repository": "https://github.com/kuku-mom/kuku"
+  },
+  "version": "0.6.0",
+  "commit": "c690bb6e952472c788acb7e3ae948c84b03f2268",
+  "platform": "macOS desktop",
+  "scope": {
+    "kind": "application",
+    "dataFlow": "Markdown notes"
+  },
+  "syncMode": "Built-in Kuku Sync with sync enabled for the vault",
+  "rubricVersion": {
+    "commit": "4eedb2272841bdeb2d7c3387784ba157d2f33f1c",
+    "adoptedOn": "2026-11-27"
+  },
+  "verification": "static",
+  "localFirstClaim": {
+    "quote": "A local-first Markdown knowledge workspace for macOS.",
+    "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/README.md#L10"
+  },
+  "maturity": "unclear",
+  "criteria": {
+    "offline": {
+      "value": "meets",
+      "evidence": "The vault reads note text from local files and writes note changes to the local filesystem.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/vault/commands.rs#L325-L335",
+      "quote": "    let root = get_vault_root(&state)?;\n    let resolved = resolve_vault_path_strict(&root, &path).await?;\n    let mutation = state.expected_mutations.record_write(&path, false);\n    if let Some(parent) = resolved.parent()\n        && let Err(error) = tokio::fs::create_dir_all(parent).await\n    {\n        state.expected_mutations.cancel(mutation);\n        return Err(error.to_string());\n    }\n    if let Err(error) = tokio::fs::write(&resolved, &content).await {\n        state.expected_mutations.cancel(mutation);"
+    },
+    "devicePrimary": {
+      "value": "misses",
+      "evidence": "The server rejects publication when the client's expected head differs from the stored workspace head.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/commit.go#L120-L126",
+      "quote": "\t\tcurrentHead := textValue(workspace.CurrentHeadCommitID)\n\t\tif currentHead != normalized.ExpectedHeadCommitID {\n\t\t\treturn &HeadConflictError{\n\t\t\t\tWorkspaceID:   normalized.WorkspaceID.String(),\n\t\t\t\tCurrentHeadID: currentHead,\n\t\t\t\tHeadVersion:   workspace.HeadVersion,\n\t\t\t}"
+    },
+    "fullHistory": {
+      "value": "unclear",
+      "evidence": "The server inventories history older than a checkpoint, while the reviewed code does not establish preservation of every local edit.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/gc.go#L123-L130",
+      "quote": "\t\tgraph := buildReachableObjectGraph(workspace, commits, commitObjects)\n\t\treport.LatestCheckpoint = graph.LatestCheckpoint\n\t\treport.HasLatestCheckpoint = graph.HasLatestCheckpoint\n\t\treport.ReachableCommitCount = len(graph.CommitIDs)\n\t\treport.ReachableObjectCount = len(graph.ObjectIDs)\n\t\treport.PreservedCommitCount = len(graph.PreservedCommitIDs)\n\t\treport.PreservedObjectCount = len(graph.PreservedObjectIDs)\n\t\treport.OldReachableHistoryCandidates = graph.OldReachableHistoryCommits"
+    },
+    "anyServer": {
+      "value": "partial",
+      "evidence": "Self-hosted deployments are documented, while the reviewed instructions do not establish a lossless provider switch.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/docs/development.md#L88-L94",
+      "quote": "## Self-Hosting References\n\nKuku's server is built with Go + Postgres and ships with Docker Compose configurations. Use these as starting points for your own deployment rather than assuming they are the only supported topology.\n\n- `infra/docker/local`: local development with web + server + postgres + mailpit\n- `infra/docker/preview`: preview environment\n- `infra/docker/prod`: production API server behind Cloudflare Tunnel"
+    },
+    "e2ee": {
+      "value": "meets",
+      "evidence": "Sync packs are encrypted on the client with a key derived from the workspace key.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/packer.rs#L62-L70",
+      "quote": "    let pack = create_plain_pack(object_id, entries)?;\n    let compressed = zstd::stream::encode_all(Cursor::new(pack), 0)?;\n    let key = object_key(workspace_key, workspace_id, object_kind)?;\n    let aad = PackAad::new(workspace_id, object_id, object_kind, commit_id);\n    let blob = encrypt_blob(&key, &aad, &compressed)?;\n    Ok(EncryptedPack {\n        object_id: object_id.into(),\n        metadata: encrypted_blob_metadata(&blob),\n        blob,"
+    },
+    "postQuantum": {
+      "value": "misses",
+      "evidence": "The server uses Ed25519 to verify commits for this sync flow.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/commit.go#L146-L148",
+      "quote": "\t\tif !ed25519.Verify(ed25519.PublicKey(device.SigningPublicKey), canonicalPayload, normalized.Signature) {\n\t\t\treturn ErrInvalidSignature\n\t\t}"
+    },
+    "keysNotAccounts": {
+      "value": "misses",
+      "evidence": "The server checks active device access in the context of the authenticated user account.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/commit.go#L129-L136",
+      "quote": "\t\tdevice, err := q.GetActiveSyncDeviceForUpdate(ctx, sqlc.GetActiveSyncDeviceForUpdateParams{\n\t\t\tWorkspaceID: normalized.WorkspaceID,\n\t\t\tID:          normalized.AuthorDeviceID,\n\t\t\tUserID:      userID,\n\t\t})\n\t\tif errors.Is(err, pgx.ErrNoRows) {\n\t\t\treturn ErrPermissionDenied\n\t\t}"
+    },
+    "openSource": {
+      "value": "meets",
+      "evidence": "The repository containing the desktop client and server carries the MIT license.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/LICENSE#L1-L3",
+      "quote": "MIT License\n\nCopyright (c) 2026 kuku-mom"
+    }
+  }
+}

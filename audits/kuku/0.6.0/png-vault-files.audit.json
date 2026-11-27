@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Kuku",
+    "repository": "https://github.com/kuku-mom/kuku"
+  },
+  "version": "0.6.0",
+  "commit": "c690bb6e952472c788acb7e3ae948c84b03f2268",
+  "platform": "macOS desktop",
+  "scope": {
+    "kind": "application",
+    "dataFlow": "PNG vault files"
+  },
+  "syncMode": "Built-in Kuku Sync with sync enabled for the vault",
+  "rubricVersion": {
+    "commit": "4eedb2272841bdeb2d7c3387784ba157d2f33f1c",
+    "adoptedOn": "2026-11-27"
+  },
+  "verification": "static",
+  "localFirstClaim": {
+    "quote": "A local-first Markdown knowledge workspace for macOS.",
+    "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/README.md#L10"
+  },
+  "maturity": "unclear",
+  "criteria": {
+    "offline": {
+      "value": "meets",
+      "evidence": "The binary vault API reads and writes file bytes directly on the local filesystem.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/vault/commands.rs#L346-L370",
+      "quote": "pub async fn vault_read_binary(\n    state: State<'_, VaultState>,\n    path: String,\n) -> Result<Vec<u8>, String> {\n    let root = get_vault_root(&state)?;\n    let resolved = resolve_vault_path_strict(&root, &path).await?;\n    tokio::fs::read(&resolved).await.map_err(|e| e.to_string())\n}\n\n#[command]\npub async fn vault_write_binary(\n    state: State<'_, VaultState>,\n    path: String,\n    data: Vec<u8>,\n) -> Result<(), String> {\n    let root = get_vault_root(&state)?;\n    let resolved = resolve_vault_path_strict(&root, &path).await?;\n    if let Some(parent) = resolved.parent() {\n        tokio::fs::create_dir_all(parent)\n            .await\n            .map_err(|e| e.to_string())?;\n    }\n    tokio::fs::write(&resolved, &data)\n        .await\n        .map_err(|e| e.to_string())"
+    },
+    "devicePrimary": {
+      "value": "misses",
+      "evidence": "PNG bytes stay in the local vault and are excluded from the device merge path.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/scanner.rs#L124-L128",
+      "quote": "        if !file_type.is_file() || !is_markdown_path(&path) {\n            continue;\n        }\n\n        files.push(scan_file(root, &path)?);"
+    },
+    "fullHistory": {
+      "value": "misses",
+      "evidence": "The sync scanner excludes these files, which have no change history in the sync protocol.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/scanner.rs#L124-L128",
+      "quote": "        if !file_type.is_file() || !is_markdown_path(&path) {\n            continue;\n        }\n\n        files.push(scan_file(root, &path)?);"
+    },
+    "anyServer": {
+      "value": "misses",
+      "evidence": "The built-in sync client sends these file bytes to none of its compatible servers.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/scanner.rs#L124-L128",
+      "quote": "        if !file_type.is_file() || !is_markdown_path(&path) {\n            continue;\n        }\n\n        files.push(scan_file(root, &path)?);"
+    },
+    "e2ee": {
+      "value": "misses",
+      "evidence": "The built-in end-to-end encrypted sync path excludes the PNG bytes.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/scanner.rs#L124-L128",
+      "quote": "        if !file_type.is_file() || !is_markdown_path(&path) {\n            continue;\n        }\n\n        files.push(scan_file(root, &path)?);"
+    },
+    "postQuantum": {
+      "value": "misses",
+      "evidence": "The built-in sync path excludes these bytes and provides no post-quantum protection for their transfer.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/scanner.rs#L124-L128",
+      "quote": "        if !file_type.is_file() || !is_markdown_path(&path) {\n            continue;\n        }\n\n        files.push(scan_file(root, &path)?);"
+    },
+    "keysNotAccounts": {
+      "value": "unclear",
+      "evidence": "The exclusion establishes that the file stays out of sync, while it does not show how cryptographic identity applies to this file flow.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/scanner.rs#L124-L128",
+      "quote": "        if !file_type.is_file() || !is_markdown_path(&path) {\n            continue;\n        }\n\n        files.push(scan_file(root, &path)?);"
+    },
+    "openSource": {
+      "value": "meets",
+      "evidence": "The repository containing the desktop client and server carries the MIT license.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/LICENSE#L1-L3",
+      "quote": "MIT License\n\nCopyright (c) 2026 kuku-mom"
+    }
+  }
+}

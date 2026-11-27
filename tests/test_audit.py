@@ -17,8 +17,9 @@ FIXTURES = Path(__file__).with_name("fixtures")
 EVIDENCE = FIXTURES / "evidence.md"
 sys.path.insert(0, str(SKILL / "scripts"))
 
-from audit import ASSETS, load_json, validate_audit
+from audit import ASSETS, check_schema, load_json, validate_audit
 from audit_sources import AuditError, HttpReader, NoRedirect, parse_repository, parse_source
+from report import render_report
 
 
 class AuditTests(unittest.TestCase):
@@ -294,6 +295,25 @@ class ReaderTests(unittest.TestCase):
         allowed.opener = Mock()
         allowed.opener.open.return_value = response
         self.assertEqual(allowed(citation.file), "line\n")
+
+    def test_reviewed_audits_match_schema_and_recorded_reports(self):
+        """Reviewed audits stay valid offline; their citations were checked against the source at review time."""
+        schema = load_json(ASSETS / "audit.schema.json")
+        rubric = load_json(ASSETS / "rubric.json")
+        folders = sorted({path.parent for path in (ROOT / "audits").glob("*/*/*.audit.json")})
+        self.assertTrue(folders)
+        for folder in folders:
+            with self.subTest(folder=folder.relative_to(ROOT).as_posix()):
+                self.assertTrue((folder / "review.md").is_file())
+                audits, categories = [], []
+                for path in sorted(folder.glob("*.audit.json")):
+                    audit = load_json(path)
+                    check_schema(audit, schema, schema, "audit")
+                    project = parse_repository(audit["project"]["repository"])
+                    audits.append(audit)
+                    categories.append(validate_audit(audit, rubric, project, None))
+                report = render_report(audits, categories, rubric, True)
+                self.assertEqual(report, (folder / "report.md").read_text(encoding="utf-8"))
 
     def test_rubric_examples_and_cached_evidence(self):
         sample = load_json(ASSETS / "example.audit.json")
