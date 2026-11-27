@@ -43,6 +43,20 @@ For a local checkout, use `codex plugin marketplace add "$PWD"` from the reposit
 
 To uninstall, run `codex plugin remove is-local-first@ownctrl-local-first` and then `codex plugin marketplace remove ownctrl-local-first`.
 
+## Install in OpenCode
+
+Copy the skill folder into OpenCode's global skills directory:
+
+```sh
+git clone https://github.com/miccy/is-local-first.git
+mkdir -p ~/.config/opencode/skills
+cp -R is-local-first/skills/is-local-first ~/.config/opencode/skills/
+```
+
+Start a new OpenCode session and mention `@is-local-first` with a project URL or the question below. [OpenCode skills guide](https://opencode.ai/docs/skills/)
+
+To uninstall, delete `~/.config/opencode/skills/is-local-first`.
+
 ## Try your first audit
 
 > Use is-local-first to audit https://github.com/kuku-mom/kuku at tag 0.6.0 on macOS. With sync enabled, do PNG attachments reach my second device? Show the source lines behind the answer.
