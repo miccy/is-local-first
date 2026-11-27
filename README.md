@@ -52,6 +52,7 @@ Provide a project name, official site, repository link, release, or local checko
 - [Audit workflow](skills/is-local-first/SKILL.md)
 - [Scoring rubric](skills/is-local-first/references/rubric.md)
 - [Example audit JSON](skills/is-local-first/assets/example.audit.json)
+- [Report format](skills/is-local-first/references/output.md) and an [example report](skills/is-local-first/assets/example.report.md)
 
 ## Validate an audit
 
@@ -63,6 +64,12 @@ python skills/is-local-first/scripts/audit.py validate audit.json --repo /path/t
 ```
 
 The first command reads public commit-pinned evidence over HTTPS. The second reads Git objects offline.
+
+Print the chat report for one or more validated audits of the same release:
+
+```sh
+python skills/is-local-first/scripts/audit.py render audit.json
+```
 
 ## Contributing
 

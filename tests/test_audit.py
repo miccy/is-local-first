@@ -13,7 +13,8 @@ from urllib.error import HTTPError
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills" / "is-local-first"
-EVIDENCE = Path(__file__).with_name("fixtures").joinpath("evidence.md")
+FIXTURES = Path(__file__).with_name("fixtures")
+EVIDENCE = FIXTURES / "evidence.md"
 sys.path.insert(0, str(SKILL / "scripts"))
 
 from audit import ASSETS, load_json, validate_audit
@@ -72,6 +73,85 @@ class AuditTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn(message, result.stderr)
         self.assertEqual(result.stdout, "")
+
+    def render_cli(self, *args):
+        return subprocess.run(
+            [sys.executable, str(SKILL / "scripts" / "audit.py"), "render", *map(str, args)],
+            capture_output=True, text=True, encoding="utf-8", timeout=30,
+        )
+
+    def assert_report(self, snapshot, *args):
+        """Compare a rendered report with its snapshot. UPDATE_SNAPSHOTS=1 rewrites it."""
+        result = self.render_cli(*args)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        if os.environ.get("UPDATE_SNAPSHOTS"):
+            snapshot.write_text(result.stdout, encoding="utf-8")
+        self.assertEqual(result.stdout, snapshot.read_text(encoding="utf-8"))
+        return result.stdout
+
+    def write_audit(self, name="audit.json"):
+        path = self.root / name
+        path.write_text(json.dumps(self.audit), encoding="utf-8")
+        return path
+
+    def test_render_database_report(self):
+        report = self.assert_report(
+            ASSETS / "example.report.md", ASSETS / "example.audit.json", "--repo", self.repo,
+        )
+        self.assertIn("citations machine-verified", report)
+        self.assertNotIn("|", report)
+
+    def test_render_application_with_two_flows(self):
+        report = self.assert_report(
+            ASSETS / "example-application.report.md",
+            FIXTURES / "app-records.audit.json", FIXTURES / "app-attachments.audit.json",
+            "--repo", self.repo,
+        )
+        self.assertIn("## Local-first\n", report)
+        self.assertIn("## Not local-first yet\n", report)
+
+    def test_render_unverified_report_says_so(self):
+        report = self.assert_report(
+            FIXTURES / "report-unverified.md", ASSETS / "example.audit.json", "--unverified",
+        )
+        self.assertIn("## Local-first (provisional)", report)
+        self.assertIn("**Not machine-verified.**", report)
+        self.assertNotIn("citations machine-verified", report)
+
+    def test_render_checks_evidence_unless_unverified(self):
+        self.audit["criteria"]["offline"]["quote"] = "A quote that the source does not contain."
+        path = self.write_audit()
+        result = self.render_cli(path, "--repo", self.repo)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("quote does not match", result.stderr)
+        self.assertEqual(result.stdout, "")
+        self.assertEqual(self.render_cli(path, "--unverified").returncode, 0)
+
+    def test_render_unverified_takes_no_source_options(self):
+        result = self.render_cli(self.write_audit(), "--unverified", "--repo", self.repo)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("--unverified reads no sources", result.stderr)
+
+    def test_render_requires_one_snapshot(self):
+        first = self.write_audit("first.json")
+        self.audit["maturity"] = "beta"
+        result = self.render_cli(first, self.write_audit("second.json"), "--repo", self.repo)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("maturity differs", result.stderr)
+
+    def test_render_keeps_audit_text_literal(self):
+        self.audit["project"]["name"] = "Example\n# Records"
+        self.audit["scope"]["dataFlow"] = "<img src=x> records"
+        self.audit["criteria"]["offline"]["evidence"] = "See [this](https://example.invalid) *now*."
+        result = self.render_cli(self.write_audit(), "--repo", self.repo)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(result.stdout.startswith("# Example # Records 1.2.0\n"))
+        self.assertIn("**\\<img src=x\\> records**", result.stdout)
+        self.assertIn("See \\[this\\](https://example.invalid) \\*now\\*.", result.stdout)
+
+    def test_render_fences_quotes_that_contain_fences(self):
+        from report import fenced
+        self.assertEqual(fenced("a\n```\nb"), "````text\na\n```\nb\n````")
 
     def test_pinned_git_blob_wins_over_dirty_checkout(self):
         self.addCleanup(self.worktree_file.write_bytes, EVIDENCE.read_bytes())

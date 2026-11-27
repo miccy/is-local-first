@@ -31,7 +31,7 @@ Use primary sources at the pinned revision. Prefer the code for what the product
    ```
 
    Use the HTTPS form for public sources and the local form for an available clone. Supply additional local repositories with `--repo-map` when needed. The [format reference](references/audit-format.md) covers trusted self-hosted forges. Inspect failures and correct the source, selected scope, or rating as the evidence warrants.
-4. Report the category from a successful validator run, the audited scope and release, the claim status, and the evidence for all eight criteria. For an audit without machine validation, mark it **not machine-verified** and use the [rubric decision rules](references/rubric.md#category) for a provisional category. When evidence is incomplete or the validator fails, state the unresolved condition. Provide one result per data flow.
+4. Render the result with `python scripts/audit.py render` and present it as the [report format](references/output.md) describes. The report gives the category from a successful validator run, the audited scope and release, the claim status, and the evidence for all eight criteria. For an audit without machine validation, render with `--unverified` or write the same layout by hand, mark it **not machine-verified**, and use the [rubric decision rules](references/rubric.md#category) for a provisional category. When evidence is incomplete or the validator fails, state the unresolved condition. Provide one result per data flow.
 
 If the reader is deciding whether to try the project, summarize the supported platform, local storage, sync backend, and any account or server required for first use. Cite the source for the audited release and label practical observations as static when you have only inspected source.
 

@@ -1,4 +1,4 @@
-"""Validate a static is-local-first audit and compute its category."""
+"""Validate static is-local-first audits, compute categories, and render reports."""
 
 import argparse
 import json
@@ -10,6 +10,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 
 from audit_sources import AuditError, HOST, HttpReader, LocalReader, parse_repository, parse_source
+from report import render_report
 from rubric import classify
 
 
@@ -158,6 +159,8 @@ def validate_audit(audit, rubric, project, reader):
     )
     cache = {}
     for location, citation, quote, exact_lines in audit_citations(audit, project):
+        if reader is None:
+            continue
         try:
             if citation.file not in cache:
                 cache[citation.file] = reader(citation.file)
@@ -192,27 +195,54 @@ def make_reader(args, project):
     return LocalReader(clones)
 
 
+def check_audit(path, schema, rubric, args):
+    audit = load_json(path)
+    check_schema(audit, schema, schema, "audit")
+    project = parse_repository(audit["project"]["repository"])
+    reader = None if args.unverified else make_reader(args, project)
+    return audit, validate_audit(audit, rubric, project, reader)
+
+
+def add_source_options(command):
+    command.add_argument("--repo", type=Path, help="read only from this local Git clone")
+    command.add_argument("--repo-map", action="append", default=[], metavar="URL=PATH")
+    command.add_argument("--allow-host", type=str.lower, action="append", default=[], metavar="HOST")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     validate = commands.add_parser("validate", help="validate evidence and print the computed category")
     validate.add_argument("audit", type=Path, help="path to audit.json")
-    validate.add_argument("--repo", type=Path, help="read only from this local Git clone")
-    validate.add_argument("--repo-map", action="append", default=[], metavar="URL=PATH")
-    validate.add_argument("--allow-host", type=str.lower, action="append", default=[], metavar="HOST")
+    add_source_options(validate)
+    validate.set_defaults(unverified=False)
+    render = commands.add_parser("render", help="validate audits of one snapshot and print the chat report")
+    render.add_argument("audits", type=Path, nargs="+", help="one audit.json per data flow")
+    add_source_options(render)
+    render.add_argument(
+        "--unverified", action="store_true",
+        help="skip source checks and label the report not machine-verified",
+    )
     args = parser.parse_args()
 
     try:
-        audit = load_json(args.audit)
+        if args.unverified and (args.repo or args.repo_map or args.allow_host):
+            raise AuditError("--unverified reads no sources and takes no source options")
         schema = load_json(ASSETS / "audit.schema.json")
-        check_schema(audit, schema, schema, "audit")
         rubric = load_json(ASSETS / "rubric.json")
-        project = parse_repository(audit["project"]["repository"])
-        category = validate_audit(audit, rubric, project, make_reader(args, project))
+        if args.command == "validate":
+            _, category = check_audit(args.audit, schema, rubric, args)
+            output = json.dumps({"category": category}) + "\n"
+        else:
+            checked = [check_audit(path, schema, rubric, args) for path in args.audits]
+            audits, categories = zip(*checked)
+            output = render_report(audits, categories, rubric, not args.unverified)
     except (ValueError, OSError) as error:
         print(f"Invalid audit: {error}", file=sys.stderr)
         return 1
-    print(json.dumps({"category": category}))
+    # The report contains status symbols, so write UTF-8 regardless of the console encoding.
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stdout.write(output)
     return 0
 
 

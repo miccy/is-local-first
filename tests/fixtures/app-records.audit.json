@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Example Records",
+    "repository": "https://github.com/example/is-local-first-audit-fixture"
+  },
+  "version": "1.2.0",
+  "commit": "705c2fa1357119e6910de4386eea2cadc8627d0e",
+  "platform": "macOS desktop",
+  "scope": {
+    "kind": "application",
+    "dataFlow": "records"
+  },
+  "syncMode": "default relay synchronization",
+  "rubricVersion": {
+    "commit": "4eedb2272841bdeb2d7c3387784ba157d2f33f1c",
+    "adoptedOn": "2026-11-27"
+  },
+  "verification": "static",
+  "localFirstClaim": {
+    "quote": "local-first database",
+    "source": "https://github.com/example/is-local-first-audit-fixture/blob/705c2fa1357119e6910de4386eea2cadc8627d0e/README.md#L1"
+  },
+  "maturity": "stable",
+  "criteria": {
+    "offline": {
+      "value": "meets",
+      "evidence": "The default configuration persists offline reads and writes across restarts.",
+      "source": "https://github.com/example/is-local-first-audit-fixture/blob/705c2fa1357119e6910de4386eea2cadc8627d0e/README.md#L2",
+      "quote": "Records can be read and written offline. Changes survive a restart with default settings."
+    },
+    "devicePrimary": {
+      "value": "meets",
+      "evidence": "Devices merge their state locally.",
+      "source": "https://github.com/example/is-local-first-audit-fixture/blob/705c2fa1357119e6910de4386eea2cadc8627d0e/README.md#L3",
+      "quote": "Every device merges its own copy."
+    },
+    "fullHistory": {
+      "value": "meets",
+      "evidence": "Overwritten changes remain in the record history.",
+      "source": "https://github.com/example/is-local-first-audit-fixture/blob/705c2fa1357119e6910de4386eea2cadc8627d0e/README.md#L4",
+      "quote": "All prior record changes are retained."
+    },
+    "anyServer": {
+      "value": "meets",
+      "evidence": "The user can select a compatible relay or self-host one.",
+      "source": "https://github.com/example/is-local-first-audit-fixture/blob/705c2fa1357119e6910de4386eea2cadc8627d0e/README.md#L5",
+      "quote": "Clients can use any compatible relay, including a self-hosted relay."
+    },
+    "e2ee": {
+      "value": "meets",
+      "evidence": "All synced record contents are encrypted end to end.",
+      "source": "https://github.com/example/is-local-first-audit-fixture/blob/705c2fa1357119e6910de4386eea2cadc8627d0e/README.md#L6",
+      "quote": "Every synced record is end-to-end encrypted by default. No option disables encryption."
+    },
+    "postQuantum": {
+      "value": "meets",
+      "evidence": "Key exchange and signatures use post-quantum schemes.",
+      "source": "https://github.com/example/is-local-first-audit-fixture/blob/705c2fa1357119e6910de4386eea2cadc8627d0e/README.md#L7",
+      "quote": "Synced keys are exchanged using ML-KEM and changes are signed with ML-DSA."
+    },
+    "keysNotAccounts": {
+      "value": "n/a",
+      "evidence": "The library has no concept of users.",
+      "source": "https://github.com/example/is-local-first-audit-fixture/blob/705c2fa1357119e6910de4386eea2cadc8627d0e/README.md#L8",
+      "quote": "This library has no concept of user identities."
+    },
+    "openSource": {
+      "value": "meets",
+      "evidence": "The client and required relay are MIT licensed.",
+      "source": "https://github.com/example/is-local-first-audit-fixture/blob/705c2fa1357119e6910de4386eea2cadc8627d0e/README.md#L9",
+      "quote": "The client and relay are released under the MIT license."
+    }
+  }
+}
