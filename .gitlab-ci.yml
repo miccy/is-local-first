@@ -19,3 +19,4 @@ validate-skill:
     - python -m pip install -r requirements-ci.txt
   script:
     - skills-ref validate skills/is-local-first
+    - python scripts/check_rubric.py

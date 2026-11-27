@@ -1,0 +1,122 @@
+{
+  "source": {
+    "commit": "4eedb2272841bdeb2d7c3387784ba157d2f33f1c",
+    "commitDate": "2026-11-21",
+    "adoptedOn": "2026-11-27",
+    "comparisonCheckedOn": "2026-11-20",
+    "comparisonUrl": "https://www.evolu.dev/docs/comparison",
+    "repository": "https://github.com/evoluhq/evolu",
+    "criteriaPath": ".agents/skills/comparison-update/SKILL.md",
+    "categoryPath": "apps/web/src/comparison/comparison.ts",
+    "dataPath": "apps/web/src/comparison/comparison.json",
+    "licensePath": "LICENSE",
+    "license": "MIT"
+  },
+  "criteria": {
+    "offline": {
+      "title": "Durable offline reads and writes",
+      "definition": "Without a network, the default configuration accepts reads and writes and preserves data across restarts.",
+      "guidance": "Opt-in persistence or offline changes held only in memory are partial. Refusing offline writes misses the criterion."
+    },
+    "devicePrimary": {
+      "title": "Device authority",
+      "definition": "Each device merges its own state and determines which changes stand.",
+      "guidance": "Server ordering, rollback after server rejection, and replacement by server state miss. A relay that can refuse to forward a change can still meet this criterion if the device keeps the change."
+    },
+    "fullHistory": {
+      "title": "Complete change history",
+      "definition": "The system keeps changes even after later writes replace their values, so devices can merge after long disconnections.",
+      "guidance": "Default pruning, compaction, garbage collection, or snapshot bootstrap misses when it discards overwritten changes."
+    },
+    "anyServer": {
+      "title": "Replaceable sync infrastructure",
+      "definition": "Peers can synchronize directly or use interchangeable servers, including a self-hosted one.",
+      "guidance": "For server-based sync, verify that switching providers preserves user data."
+    },
+    "e2ee": {
+      "title": "Mandatory end-to-end encryption",
+      "definition": "Sync servers lack the keys to read user data, and the product provides no way to disable that protection.",
+      "guidance": "Optional built-in protection is partial. Encryption that the application developer must implement through a hook, transformer, or other extension misses."
+    },
+    "postQuantum": {
+      "title": "Quantum-resistant protection",
+      "definition": "Protection covers both the exchange of data keys and stored signatures used to authorize access or authenticate changes.",
+      "guidance": "Key exchange or wrapping that depends on classical public-key security, for example X25519 or RSA alone, and classical stored signatures, for example Ed25519 or ECDSA, miss. Examples that can meet the rule include ML-KEM, X-Wing or PQXDH for key exchange, ML-DSA or SLH-DSA for signatures, and symmetric keys that never travel over public-key cryptography. Without end-to-end encryption this misses. If end-to-end encryption is optional, assess that mode and use partial if it otherwise meets."
+    },
+    "keysNotAccounts": {
+      "title": "Device-held identity keys",
+      "definition": "Keys on the device establish identity and access. A provider account can handle billing separately.",
+      "guidance": "Use n/a only when the tool has no concept of users."
+    },
+    "openSource": {
+      "title": "Open-source client and required server",
+      "definition": "Both the client and every server component the tool requires are available under OSI-approved licenses.",
+      "guidance": "Client-only open source is partial if a proprietary server is required. An OSI-licensed client suffices when the tool requires no server of its own or just runs in the application's backend."
+    }
+  },
+  "statuses": {
+    "meets": {"symbol": "✓", "passes": true, "description": "The feature applies by default and in every applicable case."},
+    "partial": {"symbol": "◐", "passes": false, "description": "The feature covers only some cases or is optional, experimental, unfinished, or enterprise-only."},
+    "misses": {"symbol": "✗", "passes": false, "description": "Primary evidence shows that the criterion fails."},
+    "n/a": {"symbol": "–", "passes": true, "onlyCriterion": "keysNotAccounts", "description": "The tool has no users, so there is no user identity or account authority to assess."},
+    "unclear": {"symbol": "?", "passes": false, "description": "Available primary evidence leaves the criterion unresolved."}
+  },
+  "evidenceRules": [
+    "Record one sentence of evidence and a primary source for every rating. Use an absolute HTTPS URL for the relevant code lines, first-party documentation, a release, or repository metadata. Prefer commit permalinks for code.",
+    "Use a verbatim first-party quote containing a spelling of local-first as the claim. Preserve its source and add an English translation if needed. Package keywords alone are insufficient. Use null when the authors make no such claim.",
+    "Record maturity from the authors, separately from criterion ratings. Map preview to beta, pre-alpha or work in progress to experimental, and general availability to stable. With no author label, use stable for a release at or above 1.0 and unclear otherwise. Use maintenance for a tool the authors still fix while developing features elsewhere. Explicitly announced maintenance mode belongs in Evolu's discontinued list.",
+    "Use the version listed as latest by the primary package registry or release page, without a leading v. For an audit scoped to a newer major available only as a prerelease, use that major's newest prerelease."
+  ],
+  "maturityLabels": ["stable", "beta", "alpha", "experimental", "maintenance", "unclear", "pre-1.0"],
+  "categoryRules": {
+    "unfinished": {
+      "maturityLabels": ["alpha", "experimental", "pre-1.0"],
+      "majorVersion": 0,
+      "prereleaseOf": [1, 0, 0]
+    },
+    "allPassing": {
+      "finished": "Local-first",
+      "unfinished": "Not local-first yet"
+    },
+    "withClaim": {
+      "required": {
+        "offline": ["meets"],
+        "devicePrimary": ["meets", "partial", "unclear"],
+        "e2ee": ["meets", "partial", "unclear"],
+        "openSource": ["meets"]
+      },
+      "matches": "Not local-first yet",
+      "otherwise": "Marketed as local-first"
+    },
+    "withoutClaim": {
+      "required": {"offline": ["meets"]},
+      "matches": "Offline-first",
+      "otherwise": "Sync engine"
+    }
+  },
+  "applicationRules": [
+    "Identify the audited product version, platform, data flow, and sync mode. Include any setting or provider choice that changes how data moves.",
+    "Rate each user-data flow on its own. For example, trace notes and attachments separately from device writes through the sync queue, merge, server storage, encryption keys, and recovery.",
+    "Report practical behavior separately, including access without an account, use of data in another program, and availability during a provider outage. These findings do not enter the category calculation.",
+    "The policy for an overall application category and the requirement to audit a separate sync-disabled configuration are open."
+  ],
+  "examples": [
+    {"name": "All criteria pass, no claim", "claim": false, "maturity": "stable", "version": "1.0.0", "overrides": {}, "expected": "Local-first"},
+    {"name": "All criteria pass before 1.0", "claim": false, "maturity": "stable", "version": "0.9.0", "overrides": {}, "expected": "Not local-first yet"},
+    {"name": "First stable release is still a prerelease", "claim": true, "maturity": "stable", "version": "1.0.0-rc.1", "overrides": {}, "expected": "Not local-first yet"},
+    {"name": "Current release is labelled alpha", "claim": true, "maturity": "alpha", "version": "2.1.0", "overrides": {}, "expected": "Not local-first yet"},
+    {"name": "Claim with server authority", "claim": true, "maturity": "stable", "version": "1.2.0", "overrides": {"devicePrimary": "misses"}, "expected": "Marketed as local-first"},
+    {"name": "Offline by default, no claim", "claim": false, "maturity": "stable", "version": "1.2.0", "overrides": {"fullHistory": "misses"}, "expected": "Offline-first"},
+    {"name": "Optional offline support, no claim", "claim": false, "maturity": "stable", "version": "1.2.0", "overrides": {"offline": "partial"}, "expected": "Sync engine"},
+    {"name": "Criterion 7 has no users", "claim": true, "maturity": "stable", "version": "1.2.0", "overrides": {"keysNotAccounts": "n/a"}, "expected": "Local-first"},
+    {"name": "Criterion 5 is unclear and the tool claims local-first", "claim": true, "maturity": "stable", "version": "1.2.0", "overrides": {"e2ee": "unclear"}, "expected": "Not local-first yet"},
+    {"name": "Criterion 5 explicitly fails and the tool claims local-first", "claim": true, "maturity": "stable", "version": "1.2.0", "overrides": {"e2ee": "misses"}, "expected": "Marketed as local-first"}
+  ],
+  "calibration": [
+    {"name": "Evolu", "version": null, "expected": "Local-first"},
+    {"name": "Automerge", "version": "3.5.0", "expected": "Not local-first yet"},
+    {"name": "PowerSync", "version": "1.29.1", "expected": "Marketed as local-first"},
+    {"name": "PouchDB", "version": "9.0.0", "expected": "Offline-first"},
+    {"name": "Hocuspocus", "version": "4.7.1", "expected": "Sync engine"}
+  ]
+}
