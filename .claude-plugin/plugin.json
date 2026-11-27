@@ -1,0 +1,6 @@
+{
+  "name": "is-local-first",
+  "description": "Audit local-first claims with commit-pinned evidence using the Evolu criteria.",
+  "author": { "name": "ownCTRL" },
+  "homepage": "https://gitlab.com/ownctrl/local-first/is-local-first"
+}

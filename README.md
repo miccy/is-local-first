@@ -4,11 +4,35 @@ An Agent Skill for auditing open-source apps, databases, and sync engines agains
 
 The project is before its first release. The development version includes the audit workflow, rubric, and evidence validator.
 
-## Run an audit
+## Install in Claude
 
-Load the [`is-local-first` skill directory](skills/is-local-first/) into a client that supports Agent Skills. Ask a question like this:
+### Claude chat or Desktop
 
-> Is this project local-first? Audit the latest public release, evaluate notes and attachments separately, and show the evidence for each rating.
+1. [Download the skill ZIP from the latest successful GitLab main pipeline](https://gitlab.com/ownctrl/local-first/is-local-first/-/jobs/artifacts/main/download?job=validate-skill). Keep it zipped.
+2. In Claude, open **Customize → Skills → + → Create skill → Upload a skill**. Choose the ZIP and enable **is-local-first**. [Claude's upload guide](https://support.claude.com/en/articles/12512180-use-skills-in-claude)
+3. Start a new chat and paste the first audit below.
+
+To build the upload from a local checkout, run this in the repository root:
+
+```sh
+mkdir -p dist
+git archive --format=zip --prefix=is-local-first/ --output=dist/is-local-first.zip HEAD:skills/is-local-first
+```
+
+### Claude Code
+
+Run these commands in your terminal:
+
+```sh
+claude plugin marketplace add miccy/is-local-first
+claude plugin install is-local-first@ownctrl-local-first
+```
+
+For a local checkout, use `claude plugin marketplace add "$PWD"` from the repository root for the first command. Open a new Claude Code session after installation. Type `/is-local-first:is-local-first` followed by a project URL or the question below.
+
+## Try your first audit
+
+> Use is-local-first to audit https://github.com/kuku-mom/kuku at tag 0.6.0 on macOS. With sync enabled, do PNG attachments reach my second device? Show the source lines behind the answer.
 
 Provide a project name, official site, repository link, release, or local checkout. The skill records the exact version, platform, sync mode, and data flow it examined. It inspects the audited source statically.
 

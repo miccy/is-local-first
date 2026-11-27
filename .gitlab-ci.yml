@@ -21,3 +21,8 @@ validate-skill:
     - skills-ref validate skills/is-local-first
     - python scripts/check_rubric.py
     - python -B -m unittest discover -s tests
+    - git archive --format=tar --prefix=is-local-first/ HEAD:skills/is-local-first | tar -x
+  artifacts:
+    name: is-local-first
+    paths:
+      - is-local-first/

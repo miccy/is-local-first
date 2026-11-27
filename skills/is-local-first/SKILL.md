@@ -1,6 +1,6 @@
 ---
 name: is-local-first
-description: Audit whether an open-source app, database, or sync engine is local-first using Evolu's criteria and evidence pinned to a commit. Use when asked about a project's local-first claims, offline behavior, sync architecture, or control of user data.
+description: Audit local-first claims, offline behavior, sync, and user control of data in open-source apps, databases, and sync engines. Rate each data flow using Evolu criteria and commit-pinned evidence.
 ---
 
 # is-local-first

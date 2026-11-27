@@ -1,0 +1,12 @@
+{
+  "name": "ownctrl-local-first",
+  "owner": { "name": "ownCTRL" },
+  "metadata": { "description": "Agent Skills for evaluating local-first software." },
+  "plugins": [
+    {
+      "name": "is-local-first",
+      "source": "./",
+      "description": "Check how an app stores and syncs user data, with evidence for each rating."
+    }
+  ]
+}
