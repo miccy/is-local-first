@@ -1,8 +1,20 @@
 # is-local-first
 
-An Agent Skill in development for auditing open-source applications, databases, and sync engines against the [Evolu comparison criteria](https://www.evolu.dev/docs/comparison). The goal is to show how a specific version handles user data and link each finding to primary evidence.
+An Agent Skill for auditing open-source apps, databases, and sync engines against the [Evolu comparison criteria](https://www.evolu.dev/docs/comparison). Each finding points to the lines at a specific commit that support it.
 
-The project is before its first release. The rubric and audit validator are available. The guided audit workflow is under development.
+The project is before its first release. The development version includes the audit workflow, rubric, and evidence validator.
+
+## Run an audit
+
+Load the [`is-local-first` skill directory](skills/is-local-first/) into a client that supports Agent Skills. Ask a question like this:
+
+> Is this project local-first? Audit the latest public release, evaluate notes and attachments separately, and show the evidence for each rating.
+
+Provide a project name, official site, repository link, release, or local checkout. The skill records the exact version, platform, sync mode, and data flow it examined. It inspects the audited source statically.
+
+- [Audit workflow](skills/is-local-first/SKILL.md)
+- [Scoring rubric](skills/is-local-first/references/rubric.md)
+- [Example audit JSON](skills/is-local-first/assets/example.audit.json)
 
 ## Validate an audit
 
@@ -17,7 +29,7 @@ The first command reads public commit-pinned evidence over HTTPS. The second rea
 
 ## Contributing
 
-GitLab is the canonical home for code, [issues](https://gitlab.com/ownctrl/local-first/is-local-first/-/issues), and [merge requests](https://gitlab.com/ownctrl/local-first/is-local-first/-/merge_requests). Report security issues via [SECURITY.md](SECURITY.md).
+GitLab is the canonical home for code, issues, and merge requests. The public GitHub mirror follows GitLab. [Issues](https://gitlab.com/ownctrl/local-first/is-local-first/-/issues) · [Merge requests](https://gitlab.com/ownctrl/local-first/is-local-first/-/merge_requests) · [Security reports](SECURITY.md)
 
 Run the same [Agent Skills validation](https://agentskills.io/specification#validation) used by CI from the repository root with Python 3.12 and Git.
 
