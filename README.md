@@ -2,7 +2,18 @@
 
 An Agent Skill in development for auditing open-source applications, databases, and sync engines against the [Evolu comparison criteria](https://www.evolu.dev/docs/comparison). The goal is to show how a specific version handles user data and link each finding to primary evidence.
 
-The project is before its first release. The rubric is available for review and the audit workflow is under development.
+The project is before its first release. The rubric and audit validator are available. The guided audit workflow is under development.
+
+## Validate an audit
+
+Use Python 3.12 to check an [audit](skills/is-local-first/references/audit-format.md) against the bundled schema and compute its category.
+
+```sh
+python skills/is-local-first/scripts/audit.py validate audit.json
+python skills/is-local-first/scripts/audit.py validate audit.json --repo /path/to/clone
+```
+
+The first command reads public commit-pinned evidence over HTTPS. The second reads Git objects offline.
 
 ## Contributing
 
@@ -16,6 +27,7 @@ python3.12 -m venv .venv
 python -m pip install -r requirements-ci.txt
 skills-ref validate skills/is-local-first
 python scripts/check_rubric.py
+python -B -m unittest discover -s tests
 ```
 
 Edit [rubric.json](skills/is-local-first/assets/rubric.json) to update the criteria or examples, then run `python scripts/check_rubric.py --write` to regenerate the [rubric reference](skills/is-local-first/references/rubric.md).

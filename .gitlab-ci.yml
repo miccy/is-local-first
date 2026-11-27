@@ -20,3 +20,4 @@ validate-skill:
   script:
     - skills-ref validate skills/is-local-first
     - python scripts/check_rubric.py
+    - python -B -m unittest discover -s tests
