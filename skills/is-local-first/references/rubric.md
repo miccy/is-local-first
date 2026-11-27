@@ -3,7 +3,7 @@
 
 Based on [Evolu’s comparison](https://www.evolu.dev/docs/comparison) at commit
 `4eedb2272841bdeb2d7c3387784ba157d2f33f1c` (2026-11-21).
-Adopted on 2026-11-27. Evolu checked the comparison on 2026-11-20.
+Adopted on 2026-11-27, revision 2. Evolu checked the comparison on 2026-11-20.
 
 The definitions below paraphrase Evolu’s criteria and rating rules.
 [Rating rules](https://github.com/evoluhq/evolu/blob/4eedb2272841bdeb2d7c3387784ba157d2f33f1c/.agents/skills/comparison-update/SKILL.md) · [Category code](https://github.com/evoluhq/evolu/blob/4eedb2272841bdeb2d7c3387784ba157d2f33f1c/apps/web/src/comparison/comparison.ts) · [Comparison data](https://github.com/evoluhq/evolu/blob/4eedb2272841bdeb2d7c3387784ba157d2f33f1c/apps/web/src/comparison/comparison.json) · [Evolu repository license (MIT)](https://github.com/evoluhq/evolu/blob/4eedb2272841bdeb2d7c3387784ba157d2f33f1c/LICENSE)
@@ -14,7 +14,7 @@ The definitions below paraphrase Evolu’s criteria and rating rules.
 
 Without a network, the default configuration accepts reads and writes and preserves data across restarts.
 
-Opt-in persistence or offline changes held only in memory are partial. Refusing offline writes misses the criterion.
+Opt-in persistence or offline changes held only in memory are partial. This includes a library that stores data only when the application passes it a storage adapter. Refusing offline writes misses the criterion.
 
 ### 2. Device authority (`devicePrimary`)
 
@@ -38,7 +38,7 @@ For server-based sync, verify that switching providers preserves user data.
 
 Sync servers lack the keys to read user data, and the product provides no way to disable that protection.
 
-Optional built-in protection is partial. Encryption that the application developer must implement through a hook, transformer, or other extension misses.
+Optional built-in protection is partial. So is a ready-made optional module that encrypts data before it leaves the device, when the project's own documentation points to it. Cite that reference for this criterion and the module's source for quantum resistance. Encryption that the application developer must implement through a hook, transformer, or other extension misses. Encryption of local storage alone misses.
 
 ### 6. Quantum-resistant protection (`postQuantum`)
 
@@ -69,6 +69,7 @@ Client-only open source is partial if a proprietary server is required. An OSI-l
 ## Evidence, claim, and maturity
 
 - Record one sentence of evidence and a primary source for every rating. Use an absolute HTTPS URL for the relevant code lines, first-party documentation, a release, or repository metadata. Prefer commit permalinks for code.
+- Cite the audited commit for sources in the audited repository. When the release tree leaves out the documentation, a documentation file from another commit of that repository is acceptable. At least one source must still come from the audited commit, and the report marks the other commit.
 - Use a verbatim first-party quote containing a spelling of local-first as the claim. Preserve its source and add an English translation if needed. Package keywords alone are insufficient. Use null when the authors make no such claim.
 - Record maturity from the authors, separately from criterion ratings. Map preview to beta, pre-alpha or work in progress to experimental, and general availability to stable. With no author label, use stable for a release at or above 1.0 and unclear otherwise. Use maintenance for a tool the authors still fix while developing features elsewhere. Explicitly announced maintenance mode belongs in Evolu's discontinued list.
 - Use the version listed as latest by the primary package registry or release page, without a leading v. For an audit scoped to a newer major available only as a prerelease, use that major's newest prerelease.
@@ -97,12 +98,16 @@ Criteria start as `meets` except for the overrides shown.
 | Criterion 7 has no users | Yes | `stable` | 1.2.0 | `keysNotAccounts=n/a` | Local-first |
 | Criterion 5 is unclear and the tool claims local-first | Yes | `stable` | 1.2.0 | `e2ee=unclear` | Not local-first yet |
 | Criterion 5 explicitly fails and the tool claims local-first | Yes | `stable` | 1.2.0 | `e2ee=misses` | Marketed as local-first |
+| Library with opt-in storage and a local-first claim | Yes | `stable` | 3.5.0 | `offline=partial` | Marketed as local-first |
+| Optional encryption module from the project's plugin list, no claim | No | `stable` | 9.0.0 | `e2ee=partial`, `postQuantum=partial` | Offline-first |
+| Data flow excluded from sync in an app that claims local-first | Yes | `stable` | 1.2.0 | `devicePrimary=misses`, `fullHistory=misses`, `anyServer=misses`, `e2ee=misses`, `postQuantum=misses`, `keysNotAccounts=misses` | Marketed as local-first |
 
 ## Applications
 
 - Identify the audited product version, platform, data flow, and sync mode. Include any setting or provider choice that changes how data moves.
 - Rate each user-data flow on its own. For example, trace notes and attachments separately from device writes through the sync queue, merge, server storage, encryption keys, and recovery.
 - Report practical behavior separately, including access without an account, use of data in another program, and availability during a provider outage. These findings do not enter the category calculation.
+- For a data flow that the audited sync mode excludes from synchronization, rate criteria 1 and 8 as usual. Rate criteria 2 to 6 as misses and cite the code or documentation that excludes the flow. Give criterion 7 the rating of the identity model the product uses for synchronization. Say at the top of the report that this data does not sync.
 - The policy for an overall application category and the requirement to audit a separate sync-disabled configuration are open.
 
 ## Calibration targets

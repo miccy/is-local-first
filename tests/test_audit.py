@@ -56,6 +56,13 @@ class AuditTests(unittest.TestCase):
         cls.example = load_json(ASSETS / "example.audit.json")
         if git("rev-parse", "HEAD") != cls.example["commit"]:
             raise RuntimeError("fixture commit differs from example.audit.json")
+        # A later commit holds documentation that the audited snapshot leaves out.
+        docs = cls.repo / "docs"
+        docs.mkdir()
+        (docs / "encryption.md").write_bytes(b"An optional module encrypts records before they sync.\n")
+        git("add", "--", "docs/encryption.md")
+        git("commit", "-qm", "docs: describe the optional encryption module")
+        cls.docs_commit = git("rev-parse", "HEAD")
 
     def setUp(self):
         self.audit = copy.deepcopy(self.example)
@@ -198,9 +205,34 @@ class AuditTests(unittest.TestCase):
         self.audit["localFirstClaim"]["quote"] = "unproven local-first claim"
         self.assert_invalid("localFirstClaim: quote does not match")
 
-    def test_project_commit_mismatch(self):
-        self.audit["commit"] = "0" * 40
-        self.assert_invalid("project citation must use the audit commit")
+    def test_audit_needs_a_source_at_the_audited_commit(self):
+        self.audit["commit"] = self.docs_commit
+        self.assert_invalid("at least one source must cite the audited repository and commit")
+
+    def cite_documentation_commit(self):
+        repository = self.audit["project"]["repository"]
+        self.audit["criteria"]["e2ee"].update(
+            value="partial",
+            source=f"{repository}/blob/{self.docs_commit}/docs/encryption.md#L1",
+            quote="An optional module encrypts records before they sync.",
+        )
+
+    def test_documentation_from_another_commit_is_accepted(self):
+        self.cite_documentation_commit()
+        result = self.run_cli()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout), {"category": "Not local-first yet"})
+
+    def test_report_marks_documentation_from_another_commit(self):
+        self.cite_documentation_commit()
+        result = self.render_cli(self.write_audit(), "--repo", self.repo)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(f"[encryption.md L1 at {self.docs_commit[:12]}](", result.stdout)
+        self.assertNotIn("README.md L2 at ", result.stdout)
+
+    def test_audit_without_revision_counts_as_revision_one(self):
+        del self.audit["rubricVersion"]["revision"]
+        self.assert_invalid("rubricVersion does not match the bundled rubric, revision 2")
 
     def test_local_mode_requires_explicit_mapping_for_other_repository(self):
         self.audit["criteria"]["offline"]["source"] = (

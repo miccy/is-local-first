@@ -14,7 +14,8 @@
   "syncMode": "default relay synchronization",
   "rubricVersion": {
     "commit": "4eedb2272841bdeb2d7c3387784ba157d2f33f1c",
-    "adoptedOn": "2026-11-27"
+    "adoptedOn": "2026-11-27",
+    "revision": 2
   },
   "verification": "static",
   "localFirstClaim": {

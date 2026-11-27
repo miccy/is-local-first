@@ -43,7 +43,8 @@
       "required": ["commit", "adoptedOn"],
       "properties": {
         "commit": {"$ref": "#/$defs/commit"},
-        "adoptedOn": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}
+        "adoptedOn": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+        "revision": {"type": "integer"}
       }
     },
     "verification": {"type": "string", "const": "static"},

@@ -16,7 +16,7 @@ python scripts/audit.py render /path/to/audit.json --unverified
 
 ## Present the result
 
-1. Answer the user's question in one or two sentences.
+1. Answer the user's question in one or two sentences. For a data flow that the audited sync mode excludes, say first that this data does not sync.
 2. Paste the rendered report unchanged. Keep its order, wording, symbols, and links.
 3. For an application, add a `## Practical behavior` section after the report. Cover the account or server needed for first use, where data is stored locally, the sync backend, use of the data in another program, and availability during a provider outage. Cite the audited release and label observations from source reading as static. State that this section does not affect the category.
 
@@ -29,10 +29,10 @@ Each data flow is one section, in the order the audits were given.
 - **Category.** A second-level heading. An unverified report adds `(provisional)`.
 - **Scope.** One line with the data flow in bold, then the kind, platform, and sync mode.
 - **Claim.** The project's quoted local-first claim with its source, or a statement that none was found.
-- **Eight criteria.** One paragraph each, in rubric order. A paragraph has the status symbol and word, the criterion title, one sentence of explanation, and a link to the cited lines.
+- **Eight criteria.** One paragraph each, in rubric order. A paragraph has the status symbol and word, the criterion title, one sentence of explanation, and a link to the cited lines. A link to the audited repository at another commit names that commit, for example `guide.md L4 at 0ec5a68736e3`.
 - **Evidence.** The quoted source lines for each criterion in a code block.
 
-The report closes with the rubric version and a line with the version, maturity, commit, and verification.
+The report closes with the rubric version and revision and a line with the version, maturity, commit, and verification.
 
 | Symbol | Word |
 | --- | --- |

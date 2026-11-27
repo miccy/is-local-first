@@ -46,7 +46,7 @@ def render(rubric):
         "",
         f'Based on [Evolu’s comparison]({source["comparisonUrl"]}) at commit',
         f'`{source["commit"]}` ({source["commitDate"]}).',
-        f'Adopted on {source["adoptedOn"]}. Evolu checked the comparison on '
+        f'Adopted on {source["adoptedOn"]}, revision {source["revision"]}. Evolu checked the comparison on '
         f'{source["comparisonCheckedOn"]}.',
         "",
         "The definitions below paraphrase Evolu’s criteria and rating rules.",

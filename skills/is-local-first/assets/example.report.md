@@ -72,6 +72,6 @@ This library has no concept of user identities.
 The client and relay are released under the MIT license.
 ```
 
-Rated against the [Evolu criteria](https://www.evolu.dev/docs/comparison) · rubric `4eedb2272841` adopted 2026-11-27
+Rated against the [Evolu criteria](https://www.evolu.dev/docs/comparison) · rubric `4eedb2272841` revision 2, adopted 2026-11-27
 
 Version 1.2.0 · stable · commit `705c2fa13571` · static audit · citations machine-verified

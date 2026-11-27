@@ -117,9 +117,7 @@ def audit_citations(audit, project):
     for location, entry, needs_lines in entries:
         try:
             citation = parse_source(entry["source"])
-            if citation.file.repository == project:
-                if citation.file.commit != audit["commit"]:
-                    raise AuditError("project citation must use the audit commit")
+            if citation.file.repository == project and citation.file.commit == audit["commit"]:
                 has_project_source = True
             if needs_lines and citation.first is None:
                 raise AuditError("criterion evidence requires a source line anchor")
@@ -146,11 +144,13 @@ def check_quote(text, citation, quote, exact_lines):
 
 
 def validate_audit(audit, rubric, project, reader):
+    source = rubric["source"]
     expected_rubric = {
-        "commit": rubric["source"]["commit"], "adoptedOn": rubric["source"]["adoptedOn"],
+        "commit": source["commit"], "adoptedOn": source["adoptedOn"], "revision": source["revision"],
     }
-    if audit["rubricVersion"] != expected_rubric:
-        raise AuditError("rubricVersion does not match the bundled rubric")
+    # Audits written before rubric revisions existed carry no revision and count as revision 1.
+    if {"revision": 1} | audit["rubricVersion"] != expected_rubric:
+        raise AuditError(f"rubricVersion does not match the bundled rubric, revision {source['revision']}")
 
     ratings = {key: entry["value"] for key, entry in audit["criteria"].items()}
     category = classify(

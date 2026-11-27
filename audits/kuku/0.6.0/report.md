@@ -138,7 +138,7 @@ Claims local-first: “A local-first Markdown knowledge workspace for macOS.” 
 
 ✗ **Misses: Quantum-resistant protection.** The built-in sync path excludes these bytes and provides no post-quantum protection for their transfer. [scanner.rs L124-L128](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/scanner.rs#L124-L128)
 
-? **Unclear: Device-held identity keys.** The exclusion establishes that the file stays out of sync, while it does not show how cryptographic identity applies to this file flow. [scanner.rs L124-L128](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/scanner.rs#L124-L128)
+✗ **Misses: Device-held identity keys.** This flow is excluded from sync, so it takes the rating of the sync identity model, where the server checks device access inside the authenticated user account. [commit.go L129-L136](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/commit.go#L129-L136)
 
 ✓ **Meets: Open-source client and required server.** The repository containing the desktop client and server carries the MIT license. [LICENSE L1-L3](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/LICENSE#L1-L3)
 
@@ -224,14 +224,17 @@ pub async fn vault_write_binary(
         files.push(scan_file(root, &path)?);
 ```
 
-**Device-held identity keys** · [scanner.rs L124-L128](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/scanner.rs#L124-L128)
+**Device-held identity keys** · [commit.go L129-L136](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/commit.go#L129-L136)
 
 ```text
-        if !file_type.is_file() || !is_markdown_path(&path) {
-            continue;
-        }
-
-        files.push(scan_file(root, &path)?);
+		device, err := q.GetActiveSyncDeviceForUpdate(ctx, sqlc.GetActiveSyncDeviceForUpdateParams{
+			WorkspaceID: normalized.WorkspaceID,
+			ID:          normalized.AuthorDeviceID,
+			UserID:      userID,
+		})
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrPermissionDenied
+		}
 ```
 
 **Open-source client and required server** · [LICENSE L1-L3](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/LICENSE#L1-L3)
@@ -242,6 +245,6 @@ MIT License
 Copyright (c) 2026 kuku-mom
 ```
 
-Rated against the [Evolu criteria](https://www.evolu.dev/docs/comparison) · rubric `4eedb2272841` adopted 2026-11-27
+Rated against the [Evolu criteria](https://www.evolu.dev/docs/comparison) · rubric `4eedb2272841` revision 2, adopted 2026-11-27
 
 Version 0.6.0 · unclear · commit `c690bb6e9524` · static audit · citations machine-verified

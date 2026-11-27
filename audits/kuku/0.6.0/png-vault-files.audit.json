@@ -14,7 +14,8 @@
   "syncMode": "Built-in Kuku Sync with sync enabled for the vault",
   "rubricVersion": {
     "commit": "4eedb2272841bdeb2d7c3387784ba157d2f33f1c",
-    "adoptedOn": "2026-11-27"
+    "adoptedOn": "2026-11-27",
+    "revision": 2
   },
   "verification": "static",
   "localFirstClaim": {
@@ -60,10 +61,10 @@
       "quote": "        if !file_type.is_file() || !is_markdown_path(&path) {\n            continue;\n        }\n\n        files.push(scan_file(root, &path)?);"
     },
     "keysNotAccounts": {
-      "value": "unclear",
-      "evidence": "The exclusion establishes that the file stays out of sync, while it does not show how cryptographic identity applies to this file flow.",
-      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/scanner.rs#L124-L128",
-      "quote": "        if !file_type.is_file() || !is_markdown_path(&path) {\n            continue;\n        }\n\n        files.push(scan_file(root, &path)?);"
+      "value": "misses",
+      "evidence": "This flow is excluded from sync, so it takes the rating of the sync identity model, where the server checks device access inside the authenticated user account.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/commit.go#L129-L136",
+      "quote": "\t\tdevice, err := q.GetActiveSyncDeviceForUpdate(ctx, sqlc.GetActiveSyncDeviceForUpdateParams{\n\t\t\tWorkspaceID: normalized.WorkspaceID,\n\t\t\tID:          normalized.AuthorDeviceID,\n\t\t\tUserID:      userID,\n\t\t})\n\t\tif errors.Is(err, pgx.ErrNoRows) {\n\t\t\treturn ErrPermissionDenied\n\t\t}"
     },
     "openSource": {
       "value": "meets",

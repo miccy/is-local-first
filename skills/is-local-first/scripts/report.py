@@ -2,7 +2,7 @@
 
 import re
 
-from audit_sources import AuditError, parse_source
+from audit_sources import AuditError, parse_repository, parse_source
 
 
 WORDS = {
@@ -20,13 +20,17 @@ def inline(text):
     return MARKUP.sub(r"\\\1", " ".join(text.split()))
 
 
-def source_link(url):
+def source_link(url, audit):
     citation = parse_source(url)
     label = citation.file.path[-1]
     if citation.first is not None:
         label += f" L{citation.first}"
         if citation.last != citation.first:
             label += f"-L{citation.last}"
+    project = parse_repository(audit["project"]["repository"])
+    if citation.file.repository == project and citation.file.commit != audit["commit"]:
+        # Documentation that the release tree leaves out comes from another commit.
+        label += f" at {citation.file.commit[:12]}"
     return f"[{inline(label)}]({url.translate(LINK_UNSAFE)})"
 
 
@@ -56,14 +60,14 @@ def render_flow(audit, category, rubric, verified):
         text = f"Claims local-first: “{inline(claim['quote'])}”"
         if "translation" in claim:
             text += f" (“{inline(claim['translation'])}”)"
-        blocks.append(f"{text} {source_link(claim['source'])}")
+        blocks.append(f"{text} {source_link(claim['source'], audit)}")
 
     evidence = ["### Evidence"]
     for key, criterion in rubric["criteria"].items():
         entry = audit["criteria"][key]
         status = rubric["statuses"][entry["value"]]
         title = criterion["title"]
-        link = source_link(entry["source"])
+        link = source_link(entry["source"], audit)
         blocks.append(
             f"{status['symbol']} **{WORDS[entry['value']]}: {title}.** "
             f"{inline(entry['evidence'])} {link}"
@@ -90,7 +94,7 @@ def render_report(audits, categories, rubric, verified):
     source = rubric["source"]
     blocks.append(
         f"Rated against the [Evolu criteria]({source['comparisonUrl']}) · "
-        f"rubric `{source['commit'][:12]}` adopted {source['adoptedOn']}"
+        f"rubric `{source['commit'][:12]}` revision {source['revision']}, adopted {source['adoptedOn']}"
     )
     blocks.append(" · ".join([
         f"Version {version}" if version else "No release version",

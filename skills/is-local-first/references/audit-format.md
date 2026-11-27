@@ -2,10 +2,10 @@
 
 An audit describes one product version, platform, data flow, and sync mode. Use the [schema](../assets/audit.schema.json), the [rubric](rubric.md), and the [example](../assets/example.audit.json). The example uses a fictional project and a Git commit recreated by the repository's offline tests.
 
-- `commit` is the full lowercase commit ID of the audited repository. Use `version: null` when no release version applies. Set `rubricVersion` to the bundled rubric's source commit and adoption date. Set `verification` to `static`.
+- `commit` is the full lowercase commit ID of the audited repository. Use `version: null` when no release version applies. Set `rubricVersion` to the bundled rubric's source commit, adoption date, and `revision`. An audit without a revision counts as revision 1. Set `verification` to `static`.
 - Each criterion has its rubric `value`, a concise explanation in `evidence`, the commit-pinned file permalink in `source`, and the literal lines in `quote`. Cite a line or range, for example `#L5-L8`. Copy the entire selection with its whitespace, excluding the final line terminator. The validator treats CRLF and LF as equivalent.
 - Use `localFirstClaim: null` when the project makes no such claim. A claim has a literal `quote` and a commit-pinned `source`. The quote can be a fragment of a line. Add `translation` if needed.
-- Cite the audited commit for sources from the audited repository. At least one source must come from that snapshot. Evidence from a separate component's repository uses that repository's own commit.
+- Cite the audited commit for sources from the audited repository. At least one source must come from that snapshot. When the release tree leaves out the documentation, cite the documentation file at another commit of the same repository. The report marks that commit. Evidence from a separate component's repository uses that repository's own commit.
 
 ## Validation
 

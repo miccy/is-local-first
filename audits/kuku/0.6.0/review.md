@@ -2,7 +2,7 @@
 
 A second agent read every citation in [markdown-notes.audit.json](markdown-notes.audit.json) and [png-vault-files.audit.json](png-vault-files.audit.json) in the Kuku repository at commit `c690bb6e952472c788acb7e3ae948c84b03f2268` and checked whether the cited lines support the rating. The audits were written by Codex on 2026-11-27. Claude Code reviewed them the same day. Both audits pass the validator against a local clone of the tag.
 
-The review confirms 15 of 16 ratings. One rating is contested and waits for the project owner.
+The review confirmed 15 of 16 ratings. One rating is contested and waits for the project owner. One rating was changed afterwards under rubric revision 2 and has no independent review yet.
 
 ## Markdown notes
 
@@ -22,8 +22,8 @@ The review confirms 15 of 16 ratings. One rating is contested and waits for the 
 | Criterion | Rating | Review |
 | --- | --- | --- |
 | Durable offline reads and writes | Meets | Confirmed. The binary vault commands read and write bytes on the local filesystem. |
-| Device authority, change history, sync infrastructure, encryption, quantum resistance | Misses | Confirmed as a convention. The cited scanner lines show that only Markdown files enter sync. The rubric has no rule yet for a data flow that never syncs, and these five ratings follow from the exclusion, not from separate evidence. |
-| Device-held identity keys | Unclear | Confirmed. The cited lines say nothing about identity for this flow. |
+| Device authority, change history, sync infrastructure, encryption, quantum resistance | Misses | Confirmed. The cited scanner lines show that only Markdown files enter sync. Rubric revision 2 rates criteria 2 to 6 of an excluded flow as `misses` on that evidence. |
+| Device-held identity keys | Misses (was Unclear) | Changed by the reviewer on 2026-11-27. Rubric revision 2 gives a flow excluded from sync the rating of the product's sync identity model, which the Markdown audit rates as `misses` from the same server check. The original `unclear` was confirmed under revision 1. |
 | Open-source client and required server | Meets | Confirmed. |
 
 An independent audit of the same flow, run in OpenCode with a different model, reached the same eight ratings and the same category from other line ranges in `scanner.rs` and `applier.rs`.
@@ -32,4 +32,4 @@ An independent audit of the same flow, run in OpenCode with a different model, r
 
 Both flows are `Marketed as local-first` for Kuku 0.6.0 on macOS with built-in sync enabled. PNG files in the vault do not reach a second device through Kuku sync. The [rendered report](report.md) comes from `audit.py render`.
 
-Open points for the owner: the contested rating above, and the rubric rule for flows that never sync.
+Open points: the contested rating above waits for the owner, and the changed identity rating of the PNG flow needs a second reviewer.
