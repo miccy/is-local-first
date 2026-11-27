@@ -115,7 +115,7 @@
     {"name": "Criterion 5 is unclear and the tool claims local-first", "claim": true, "maturity": "stable", "version": "1.2.0", "overrides": {"e2ee": "unclear"}, "expected": "Not local-first yet"},
     {"name": "Criterion 5 explicitly fails and the tool claims local-first", "claim": true, "maturity": "stable", "version": "1.2.0", "overrides": {"e2ee": "misses"}, "expected": "Marketed as local-first"},
     {"name": "Library with opt-in storage and a local-first claim", "claim": true, "maturity": "stable", "version": "3.5.0", "overrides": {"offline": "partial"}, "expected": "Marketed as local-first"},
-    {"name": "Optional encryption module from the project's plugin list, no claim", "claim": false, "maturity": "stable", "version": "9.0.0", "overrides": {"e2ee": "partial", "postQuantum": "partial"}, "expected": "Offline-first"},
+    {"name": "Optional encryption module from the project's plugin list, no claim", "claim": false, "maturity": "stable", "version": "1.2.0", "overrides": {"e2ee": "partial", "postQuantum": "partial"}, "expected": "Offline-first"},
     {"name": "Data flow excluded from sync in an app that claims local-first", "claim": true, "maturity": "stable", "version": "1.2.0", "overrides": {"devicePrimary": "misses", "fullHistory": "misses", "anyServer": "misses", "e2ee": "misses", "postQuantum": "misses", "keysNotAccounts": "misses"}, "expected": "Marketed as local-first"}
   ],
   "calibration": [

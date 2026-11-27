@@ -99,7 +99,7 @@ Criteria start as `meets` except for the overrides shown.
 | Criterion 5 is unclear and the tool claims local-first | Yes | `stable` | 1.2.0 | `e2ee=unclear` | Not local-first yet |
 | Criterion 5 explicitly fails and the tool claims local-first | Yes | `stable` | 1.2.0 | `e2ee=misses` | Marketed as local-first |
 | Library with opt-in storage and a local-first claim | Yes | `stable` | 3.5.0 | `offline=partial` | Marketed as local-first |
-| Optional encryption module from the project's plugin list, no claim | No | `stable` | 9.0.0 | `e2ee=partial`, `postQuantum=partial` | Offline-first |
+| Optional encryption module from the project's plugin list, no claim | No | `stable` | 1.2.0 | `e2ee=partial`, `postQuantum=partial` | Offline-first |
 | Data flow excluded from sync in an app that claims local-first | Yes | `stable` | 1.2.0 | `devicePrimary=misses`, `fullHistory=misses`, `anyServer=misses`, `e2ee=misses`, `postQuantum=misses`, `keysNotAccounts=misses` | Marketed as local-first |
 
 ## Applications

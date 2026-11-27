@@ -138,7 +138,7 @@ Claims local-first: “A local-first Markdown knowledge workspace for macOS.” 
 
 ✗ **Misses: Quantum-resistant protection.** The built-in sync path excludes these bytes and provides no post-quantum protection for their transfer. [scanner.rs L124-L128](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/desktop/src-tauri/src/sync/scanner.rs#L124-L128)
 
-✗ **Misses: Device-held identity keys.** This flow is excluded from sync, so it takes the rating of the sync identity model, where the server checks device access inside the authenticated user account. [commit.go L129-L136](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/commit.go#L129-L136)
+✗ **Misses: Device-held identity keys.** This flow is excluded from sync, so it takes the rating of the sync identity model, where the server accepts a commit only from an authenticated user account. [handler.go L336-L339](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/handler.go#L336-L339)
 
 ✓ **Meets: Open-source client and required server.** The repository containing the desktop client and server carries the MIT license. [LICENSE L1-L3](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/LICENSE#L1-L3)
 
@@ -224,17 +224,13 @@ pub async fn vault_write_binary(
         files.push(scan_file(root, &path)?);
 ```
 
-**Device-held identity keys** · [commit.go L129-L136](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/commit.go#L129-L136)
+**Device-held identity keys** · [handler.go L336-L339](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/handler.go#L336-L339)
 
 ```text
-		device, err := q.GetActiveSyncDeviceForUpdate(ctx, sqlc.GetActiveSyncDeviceForUpdateParams{
-			WorkspaceID: normalized.WorkspaceID,
-			ID:          normalized.AuthorDeviceID,
-			UserID:      userID,
-		})
-		if errors.Is(err, pgx.ErrNoRows) {
-			return ErrPermissionDenied
-		}
+	userID, _, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("not authenticated"))
+	}
 ```
 
 **Open-source client and required server** · [LICENSE L1-L3](https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/LICENSE#L1-L3)

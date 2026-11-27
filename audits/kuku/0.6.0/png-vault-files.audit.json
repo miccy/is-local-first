@@ -62,9 +62,9 @@
     },
     "keysNotAccounts": {
       "value": "misses",
-      "evidence": "This flow is excluded from sync, so it takes the rating of the sync identity model, where the server checks device access inside the authenticated user account.",
-      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/commit.go#L129-L136",
-      "quote": "\t\tdevice, err := q.GetActiveSyncDeviceForUpdate(ctx, sqlc.GetActiveSyncDeviceForUpdateParams{\n\t\t\tWorkspaceID: normalized.WorkspaceID,\n\t\t\tID:          normalized.AuthorDeviceID,\n\t\t\tUserID:      userID,\n\t\t})\n\t\tif errors.Is(err, pgx.ErrNoRows) {\n\t\t\treturn ErrPermissionDenied\n\t\t}"
+      "evidence": "This flow is excluded from sync, so it takes the rating of the sync identity model, where the server accepts a commit only from an authenticated user account.",
+      "source": "https://github.com/kuku-mom/kuku/blob/c690bb6e952472c788acb7e3ae948c84b03f2268/apps/server/internal/sync/handler.go#L336-L339",
+      "quote": "\tuserID, _, err := auth.FromContext(ctx)\n\tif err != nil {\n\t\treturn nil, connect.NewError(connect.CodeUnauthenticated, errors.New(\"not authenticated\"))\n\t}"
     },
     "openSource": {
       "value": "meets",
