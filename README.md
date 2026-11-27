@@ -30,6 +30,19 @@ claude plugin install is-local-first@ownctrl-local-first
 
 For a local checkout, use `claude plugin marketplace add "$PWD"` from the repository root for the first command. Open a new Claude Code session after installation. Type `/is-local-first:is-local-first` followed by a project URL or the question below.
 
+## Install in Codex
+
+Run these commands in your terminal:
+
+```sh
+codex plugin marketplace add miccy/is-local-first
+codex plugin add is-local-first@ownctrl-local-first
+```
+
+For a local checkout, use `codex plugin marketplace add "$PWD"` from the repository root for the first command. Start a new Codex session after installation. Run `/skills` or type `$` to pick **is-local-first**, then add a project URL or the question below. [Codex skills guide](https://learn.chatgpt.com/docs/build-skills)
+
+To uninstall, run `codex plugin remove is-local-first@ownctrl-local-first` and then `codex plugin marketplace remove ownctrl-local-first`.
+
 ## Try your first audit
 
 > Use is-local-first to audit https://github.com/kuku-mom/kuku at tag 0.6.0 on macOS. With sync enabled, do PNG attachments reach my second device? Show the source lines behind the answer.
